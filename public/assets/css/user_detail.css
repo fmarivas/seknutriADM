@@ -1,0 +1,160 @@
+.outer-container,.beguining {
+    background-color: #fff; /* Branco */
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 20px;
+	width: 70%;
+	margin: auto;
+	vertical-align: center;
+	display: none;
+}
+
+
+.form-container {
+    width: 70%;
+	margin: 200px auto;
+}
+
+.form-check-inline {
+    display: flex;
+    flex-direction: column;
+	width: 100%;
+}
+
+.checkbox-container {
+    justify-content: space-between;
+    display: flex;
+	width: 75%;
+}
+
+.container {
+    padding: 20px;
+}
+
+.form-part {
+    
+}
+
+.step-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.step-text {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ff9900; /* Laranja */
+}
+
+.progress-bar {
+    width: 200px;
+    height: 10px;
+    
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar-status {
+    width: 200px;
+    height: 10px;
+    background-color: #ddd; /* Outra cor de fundo */    
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+
+.progress_1 {
+    height: 100%;
+    background-color: #ff9900; /* Verde */
+	width: 20%;	
+}
+
+.progress_2 {
+    height: 100%;
+    background-color: #ff9900; /* Verde */
+	width: 40%;	
+}
+
+.progress_3 {
+    height: 100%;
+    background-color: #ff9900; /* Verde */
+	width: 60%;	
+}
+
+.progress_4 {
+    height: 100%;
+    background-color: #ff9900; /* Verde */
+	width: 80%;	
+}
+
+.progress_5 {
+    height: 100%;
+    background-color: #ff9900; /* Verde */
+	width: 100%;	
+}
+
+.section-title {
+    color: #333; /* Tom de Texto Padrão */
+}
+
+.menu label,
+.form-group label,
+.checkbox-container label {
+    color: #333; /* Tom de Texto Padrão */
+}
+
+.outer-container input:not([type="checkbox"]),
+.outer-container select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	box-sizing: border-box;
+}
+
+
+
+.btnNext {
+    background-color: #4caf50; /* Verde */
+    color: #fff; /* Branco */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+	float: right;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.btnBack {
+    background-color: #4caf50; /* Verde */
+    color: #fff; /* Branco */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+	float: left;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.dropdown-toggle:hover,
+.dropdown-toggle:focus {
+    background-color: #add8e6; /* Azul claro suave */
+}
+
+
+
+
+
+
+.checkbox-container {
+    margin-top: 10px;
+}
+
+/* Adicione outros estilos conforme necessário */

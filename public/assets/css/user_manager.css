@@ -1,0 +1,450 @@
+.user-item {
+	margin-bottom: 10px;
+}
+
+.user-container .dropdown {
+	display: inline-block;
+	background-color: #3498db;
+	color: #fff;
+	padding: 10px 20px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	margin-bottom: 10px;
+	cursor: pointer;
+	font-weight: bold;
+	width: 100%;
+	margin: auto;
+	margin-top: 10px;
+	transition: background-color 0.3s;
+}
+
+.user-container .dropdown:hover {
+	background-color: #2980b9;
+}
+
+.user-container .dropdown i {
+	float: right;
+	font-size: 20px;
+}
+
+.user-container .dropdown.active {
+  background-color: #2980b9;
+}
+
+.user-container .dropdown.active i {
+  transform: rotate(180deg);
+}
+
+.user-content {
+	display: none;
+	padding: 10px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	margin-top: 0px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);		
+	border: 1px solid #ddd;
+	
+}
+
+.user-profile img{
+	border-radius: 50%;
+	height: auto;
+	width: 60px;
+}
+
+.user-content table thead,
+.user-content table tbody
+{
+	text-align: center;
+}
+
+/*Table*/
+/*ROle*/
+/* Estilo para label de usuário comum (verde) */
+.table-responsive .user-label-green {
+    background-color: #4CAF50; /* Verde */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+/* Estilo para label de administrador (azul) */
+.table-responsive .user-label-blue {
+    background-color: #3498db; /* Azul */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+
+/*SOurce*/
+/* Estilo para label de source "Custom" (laranja) */
+.table-responsive .source-label-orange {
+    background-color: #f39c12; /* Laranja */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+/* Estilo para label de source "Google" (vermelho) */
+.table-responsive .source-label-red {
+    background-color: #e74c3c; /* Vermelho */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+/*Count Number*/
+.countNumber {
+    background-color: #3498db; /* Cor de fundo (azul no exemplo) */
+    color: #fff; /* Cor do texto (branco no exemplo) */
+	font-weight: bold;
+    border-radius: 50%; /* Borda redonda */
+    padding: 5px 10px; /* Espaçamento interno */
+    display: inline-block; /* Para que a largura seja ajustada ao conteúdo */
+}
+
+/*User Id*/
+.user-id-cell {
+    max-width: 75px; /* Ajuste este valor conforme necessário */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.clickble{
+	cursor: pointer;
+}
+
+.clickble:hover{
+	transform: scale(1.1);
+}
+
+/*Sortear*/
+.sortable {
+    cursor: pointer;
+}
+
+.sortable:hover {
+    background-color: #f5f5f5;
+}
+
+.sortable i {
+    margin-left: 5px;
+}
+
+.sortable.active {
+    color: #007bff;
+}
+
+/* div flutuante de mensagem de sucesso*/
+.floating-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    display: none;
+}
+
+.success-message {
+    background-color: #4CAF50; /* Cor verde para sucesso */
+    color: #fff;
+}
+
+@media (max-width: 950px) {
+	.user-content thead{
+		font-size: 8px;
+	}
+	
+	.user-content tbody{
+		font-size: 15px;
+	}
+	
+	.user-content img{
+		zoom: 75%;
+	}
+	
+	/*User email*/
+	.user-email-cell {
+		max-width: 75px; /* Ajuste este valor conforme necessário */
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+
+	/*Table*/
+	/*ROle*/
+	/* Estilo para label de usuário comum (verde) */
+	.table-responsive .user-label-green {
+		padding: 2px 5px;
+	}
+
+	/* Estilo para label de administrador (azul) */
+	.table-responsive .user-label-blue {
+		padding: 2px 5px;
+	}
+
+
+	/*SOurce*/
+	/* Estilo para label de source "Custom" (laranja) */
+	.table-responsive .source-label-orange {
+		padding: 2px 5px;
+	}
+
+	/* Estilo para label de source "Google" (vermelho) */
+	.table-responsive .source-label-red {
+		padding: 2px 5px;
+	}
+	
+}
+
+
+.inputCategory {
+    display: flex;
+    justify-content: center;
+	width: 100%;
+}
+
+.inputCategory input {
+    display: none;
+}
+
+.inputCategory label {
+    background-color: #3498db;
+    color: #fff;
+    padding: 10px 20px;
+    margin: 0 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.inputCategory label:hover {
+    background-color: #2980b9;
+}
+
+.inputCategory input:checked + label {
+    background-color: #2c3e50;
+}
+
+.user-content hr{
+	border: 1px solid #000;
+	margin-top: 10px; 
+}
+
+.content-category{
+	padding: 10px;
+	display: none;
+}
+
+/*Users Content*/
+/* Estilos para a categoria "Relatório de Usuários" */
+#usersContent {
+    padding: 20px;
+}
+
+/* Estilos para o título "Relatório de Usuários" */
+#usersContent h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Estilos para a seção "Total de Usuários Atuais" */
+.user-info {
+    margin-bottom: 30px;
+}
+
+.user-info p {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+#totalUsers {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Estilos para a seção "Atividade Recente" */
+.recent-activity {
+    margin-top: 30px;
+}
+
+.recent-activity h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.activity-container li {
+    list-style: none;
+    padding: 10px;
+	cursor: pointer;
+}
+
+.activity-container li:hover {
+    background-color: #e0e0e0;
+}
+
+.activity-date {
+    font-size: 14px;
+    color: #555;
+}
+
+.activity-type {
+    font-size: 16px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.activity-details {
+    font-size: 16px;
+}
+
+.user-info{
+	text-align: center;
+}
+
+.content-category h2,
+.content-category h3{
+	text-align:center;
+}
+
+.activity-container,
+.popularPages-container {
+    width: 100%;
+    border: 1px solid #ccc; 
+    overflow-y: auto; 
+    max-height: 300px; 
+    padding: 10px; 
+}
+
+
+#pagesContent {
+    display: none; /* Inicialmente oculta, será exibida dinamicamente */
+    padding: 20px;
+}
+
+.popular-pages {
+    margin-top: 20px;
+}
+
+.popular-pages h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.pages-list {
+    list-style: none;
+    padding: 0;
+}
+
+.pages-list li {
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pages-list li:last-child {
+    border-bottom: none;
+}
+
+.page-url {
+    font-weight: bold;
+}
+
+.visit-count {
+    color: #888;
+}
+
+.header-category-section{
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 20px;
+}
+
+.onboard input{
+	display: none;
+}
+.header-category-section label{
+	font-weight: bold;
+	cursor: pointer;
+    margin: 0 5px;
+    text-align: center;
+	transition: background-color 0.5s;
+}
+
+.header-category-section label:hover{
+	border-bottom: 2px solid #ccc;
+}
+
+.onboard.active label{
+	border-bottom: 3px solid #3498db;
+	transform: scale(1.05);
+	transition: transform 0.3s ease;
+}
+
+
+.category-item{
+	display: none;
+}
+
+.All-list {
+	max-height: 300px;
+	overflow-y: auto; 
+	border: 1px solid #ccc; 
+	border-radius: 8px; 
+	padding: 20px;
+	margin-bottom: 10px;
+	box-sizing: border-box;
+	word-break: break-word;
+}
+
+#errorScreen pre {
+	white-space: normal;
+}
+
+/* Estilo para os contêineres pai */
+.All-item {
+	border: 1px solid #ddd; /* Adapte a cor da borda conforme necessário */
+	padding: 10px;
+	margin: 10px;
+	border-radius: 8px;
+}
+
+/* Estilo para os botões de visibilidade */
+.btn-show {
+	display: inline-block;
+	margin-left: 10px;
+}
+
+/* Estilo para os ícones de olho */
+.fa-eye,
+.fa-eye-slash {
+	font-size: 18px;
+	color: #333; /* Cor dos ícones */
+	cursor: pointer;
+	margin-right: 5px;
+}
+
+/* Adiciona estilo quando a caixa de seleção está marcada */
+.btn-show input[type="checkbox"]:checked + label i.fa-eye {
+	color: green; /* Cor quando visível */
+}
+
+.btn-show label i.fa-eye-slash {
+	color: red; 
+}
+
+.btn-show input{
+	display: none;
+}
+
+.show-hide {
+	display: none;
+}

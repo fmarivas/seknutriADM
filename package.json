@@ -1,0 +1,24 @@
+{
+  "name": "seknutrition-admin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "fmarivas",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1602.0",
+    "axios": "^1.6.8",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-mysql-session": "^3.0.1",
+    "express-session": "^1.18.0",
+    "mysql": "^2.18.1",
+    "node-cache": "^5.1.2",
+    "passport": "^0.7.0",
+    "uuid": "^9.0.1"
+  }
+}

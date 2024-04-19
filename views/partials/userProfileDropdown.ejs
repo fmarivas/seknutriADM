@@ -1,0 +1,14 @@
+<div id="user-profile" aria-haspopup="true" role="button">
+    <div id="user-profile-dropdown" class="hidden">
+        <div>
+			<a href="logout"> <i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+    <% if (typeof user !== 'undefined' && user) { %>
+        <img src="<%= user.profile_pic || 'assets/img/profile.jpg' %>" alt="Profile Pic" id="imgProfile">
+        <span><%= user.fname %> <%= user.lname %></span>
+    <% } else { %>
+        <img src="assets/img/profile.jpg" alt="Profile Pic" id="imgProfile">
+        <span>Guest User</span>
+    <% } %>
+</div>

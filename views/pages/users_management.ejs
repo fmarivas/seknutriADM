@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Usuários</title>
+    <link rel="stylesheet" href="assets/css/user_manager.css">
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css" integrity="sha512-Ez0cGzNzHR1tYAv56860NLspgUGuQw16GiOOp/I2LuTmpSK9xDXlgJz3XN4cnpXWDmkNBKXR/VDMTCnAaEooxA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="assets/js/users_manager.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Gestão de Usuários</h1>
+    </header>
+
+    <div class="user-container">
+        <div class="user-item">
+            <label class="dropdown" onclick="toggleContent(this, 'listagem')">Listagem de Usuários<i class="fa fa-caret-down" aria-hidden="true"></i></label>
+            <div class="user-content" id="listagem">
+				<div class="table-responsive">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th class="sortable""><span>#</span> <i class="fas fa-sort"></i></th>
+								<th class="sortable""><span>ID</span> <i class="fas fa-sort"></i></th>
+								<th><span>Image</span></th>
+								<th class="sortable" ><span>F. Name</span> <i class="fas fa-sort"></i></th>
+								<th class="sortable" ><span>L. Name</span> <i class="fas fa-sort"></i></th>
+								<th class="sortable" ><span>Email</span> <i class="fas fa-sort"></i></th>
+								<th class="sortable" ><span>Date</span> <i class="fas fa-sort"></i></th>
+								<th class="sortable" ><span>User Type</span> <i class="fas fa-sort"></i></th>
+								<th class="sortable" ><span>Role</span> <i class="fas fa-sort"></i></th>
+								<th class="sortable" ><span>Action</span></th>
+							</tr>
+						</thead>
+						<tbody>
+							<% if (usersData && usersData.length > 0) { %>
+								<% let count = 0; %>
+								<% usersData.forEach(function(userData, index) { %>
+									<% if (userData.role === 0) { %>
+										<% count++; %>
+										<tr>
+											<td><label class="countNumber"><%= count %></label></td>
+											<td class="user-id-cell"><%= userData.user_id_info %></td>
+											<td class="user-profile">
+												<% if (imgData[index]) { %>
+													<img id="logo" src="<%= imgData[index] %>" alt="User Image">  <!-- Acessando o índice específico do imgData -->
+												<% } else { %>
+													<img id="logo" src="assets/img/profile.jpg" alt="User Image">
+												<% } %>
+											</td>
+											<td><%= userData.fname %></td>
+											<td><%= userData.lname %></td>
+											<td class="user-email-cell"><%= userData.email %></td>
+											<td><%= userData.data %></td>
+											<td style="text-align: center;">
+												<% if (userData.source.toLowerCase() === "custom") { %>
+													<label class="source-label source-label-orange"><i class="fas fa-clipboard-list"></i> Custom</label>
+												<% } else if (userData.source.toLowerCase() === "google") { %>
+													<label class="source-label source-label-red"><i class="fab fa-google"></i> Google</label>
+												<% } else { %>
+													<%= userData.source %>
+												<% } %>
+											</td>
+											<td style="text-align: center;">
+												<% if (userData.role === 0) { %>
+													<label class="user-label user-label-green"><i class="fas fa-user"></i> User</label>
+												<% } else if (userData.role === 1) { %>
+													<label class="user-label user-label-blue"><i class="fas fa-cogs"></i> Admin</label>
+												<% } %>
+											</td>
+											<td>
+												<div>
+													<i class="fas fa-trash-alt clickable" onclick="deleteUser(this)"></i>
+												</div>
+											</td>
+										</tr>
+									<% } %>
+								<% }); %>
+							<% } else { %>
+								
+							<% } %>
+
+						</tbody>
+					</table>				
+				</div>
+            </div>
+        </div>
+
+
+        <div class="user-item">
+            <!-- Botão para exibir/ocultar Relatórios de Atividade -->
+            <label class="dropdown" onclick="toggleContent(this, 'relatorios')">Relatórios de Atividade<i class="fa fa-caret-down" aria-hidden="true"></i></label>
+            <div class="user-content" id="relatorios">
+				<div style="width: 100%;">
+					<div class="inputCategory">
+						<input type="radio" name="relatorio" value="users" id="userInput">
+						<label for="userInput">Users</label>
+						<input type="radio" name="relatorio" value="pages" id="pagesInput">
+						<label for="pagesInput">Pages</label>
+						<input type="radio" name="relatorio" value="overview" id="overviewInput">
+						<label for="overviewInput">Overview</label>
+					</div>
+					<hr>					
+					<div class="ContentCategory">
+						<!-- Conteúdo para a Categoria "Usuários" -->
+						<div id="usersContent" class="content-category">
+							<h2>Relatório de Usuários</h2>
+							
+							<div class="user-info">
+								<p>Total de Usuários Actuais:</p> <span id="totalUsers"></span>
+							</div>
+							
+							<div class="recent-activity">
+								<h3>Atividade Recente</h3>
+								<div class="activity-container">
+									<ul id="recentActivityList">
+									</ul>
+								</div>
+							</div>
+
+						</div>
+						<!-- Conteúdo para a Categoria "Páginas" -->
+						<div id="pagesContent" class="content-category">
+							<h2>Relatório de Páginas</h2>
+
+							<div class="popular-pages">
+								<h3>Páginas Populares</h3>
+								<div class="popularPages-container">
+									<ul id="popularPagesList" class="pages-list">
+										<!-- Adicione mais itens conforme necessário -->
+									</ul>
+								</div>
+							</div>
+						</div>
+						<!-- Conteúdo para a Categoria "Visão Geral" -->
+						<div id="overviewContent" class="content-category">
+							<!-- Categoria 3: Geral -->
+							<div class="category-section">
+								<div class="header-category-section">
+									<div class="onboard active"  onclick="toogleContentUpdated(this, 'warningContent')">
+										<input type="radio" name="overview" id="warning">
+										<label for="warning">Avisos e Alertas</label>				
+									</div>
+									<div class="onboard" onclick="toogleContentUpdated(this, 'eventContent')">
+										<input type="radio" name="overview" id="event">
+										<label for="event" onclick="">Eventos</label>				
+									</div>
+									<div class="onboard" onclick="toogleContentUpdated(this, 'notificationContent')">
+										<input type="radio" name="overview" id="notification">
+										<label for="notification" onclick="">Notificações</label>				
+									</div>
+									<div class="onboard" onclick="toogleContentUpdated(this, 'kpiContent')">
+										<input type="radio" name="overview" id="kpi">
+										<label for="kpi" onclick="">I. G. D.</label>				
+									</div>
+									<div class="onboard" onclick="toogleContentUpdated(this, 'linksContent')">
+										<input type="radio" name="overview" id="links">
+										<label for="links" onclick="">Detalhes</label>
+									</div>
+								</div>
+								
+								<div class="content-category-section">
+									<!-- Item 1: Avisos e Alertas -->
+									<div class="category-item" id="warningContent" style="display: block" >
+										<h3>Avisos e Alertas</h3>
+										<p>Destaca quaisquer avisos ou alertas importantes relacionados à plataforma.</p>
+										<div class="All-list" id="errorScreen">
+										</div>
+									</div>
+									
+
+									<!-- Item 2: Eventos e Promoções -->
+									<div class="category-item"id="eventContent">
+										<h3>Eventos e Promoções</h3>
+										<p>Informa sobre eventos especiais, promoções em curso ou lançamento de novos recursos.</p>
+										<div class="All-list" id="event-promotion">
+										</div>				
+									</div>
+
+									<!-- Item 3: Notificações de Sistema -->
+									<div class="category-item" id="notificationContent">
+										<h3>Notificações de Sistema</h3>
+										<p>Apresenta informações sobre atualizações do sistema, manutenções agendadas ou outras notificações importantes.</p>
+										<!-- Adicione conteúdo específico aqui, se necessário -->
+
+										<div class="All-list">
+											<!-- Aqui você pode adicionar uma lista de avisos ou alertas -->
+											<div class="All-item">
+												<p>Texto ou aviso sobre as notificacoes do sistema</p>
+											</div>
+											<!-- Adicione mais itens conforme necessário -->
+										</div>				
+									</div>
+									<!-- Item 4: Indicador Geral de Desempenho -->
+									<div class="category-item" id="kpiContent">
+										<h3>Indicador Geral de Desempenho</h3>
+										<p>Inclui um indicador visual simples que reflete o desempenho geral da plataforma.</p>
+										<!-- Adicione conteúdo específico aqui, se necessário -->
+										<div class="All-list">
+											<div class="btn-show">
+												<input type="checkbox" class="visibility" id="showIdx" checked>
+												<label for="showIdx" title="Show/Hide Active Users Rate"><i class="fa fa-eye toggleView"></i></label>
+											</div>				
+											<div class="All-item" id="contentIdx">
+												<h4>Taxa de Usuários Ativos</h4>
+												<canvas></canvas>
+											</div>
+											<div class="btn-show">
+												<input type="checkbox" class="visibility" id="showGoal" checked>
+												<label for="showGoal" title="Show/Hide Goals and Achievement"><i class="fa fa-eye toggleView"></i></label>
+												
+											</div>
+											<!-- Seção: Metas e Conquistas -->
+											<div class="All-item" id="contentGoal">
+												<h4>Metas e Conquistas</h4>
+												<div>
+													<p>Metas alcancadas pela plataforma</p>
+												</div>
+											</div>				
+										</div>				
+									</div>
+
+									<!-- Item 5: Links Rápidos para Detalhes -->
+									<div class="category-item" id="linksContent">
+										<h3>Links Rápidos para Detalhes</h3>
+										<p>Fornece links diretos para seções mais detalhadas na área de "Desempenho".</p>
+										<!-- Adicione conteúdo específico aqui, se necessário -->
+										<div class="All-list">
+											<!-- Aqui você pode adicionar uma lista de avisos ou alertas -->
+											<div class="All-item">
+												<p>Links para mais detalhes</p>
+											</div>
+											<!-- Adicione mais itens conforme necessário -->
+										</div>				
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+            </div>
+        </div>
+    </div>
+	<div id="successMessage" class="floating-message success-message"></div>	
+</body>
+</html>

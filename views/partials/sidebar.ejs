@@ -1,0 +1,22 @@
+<div id="sidebar">
+    <div class="Logo">
+        <img src="assets/img/logo.png" alt="Logo"/>
+    </div>
+    <div>
+        <ul>
+			<% Object.entries(pageDetails).forEach(([pageKey, details]) => { %>
+				<% const isActive = page && page === pageKey; %>
+				<% const activeClass = isActive ? 'active' : ''; %>
+				<% const activeLiClass = isActive ? 'activeLi' : ''; %>
+				<li class="<%= activeLiClass %>">
+					<a href="/<%= pageKey %>" class="<%= activeClass %>">
+						<i class="<%= details.icon %>"></i> 
+						<span><%= details.name %></span>
+					</a>
+				</li>
+			<% }); %>
+        </ul>
+    </div>
+    <%- include('userProfileDropdown') %>
+</div>
+
