@@ -9,7 +9,6 @@ class User {
 					console.error(err)
 					let error = new Error("DataBase Error");
 					error.status = 500; // Define o status HTTP para o erro
-					next(error); // Passa o erro para o middleware de erro							
                     reject(error);
                 } else {
                     resolve(results);
