@@ -4,6 +4,11 @@ const router = express.Router()
 
 const User = require('../models/user')
 
+
+router.get('/', (req,res) => {
+	res.redirect('/users_management')
+})
+
 router.get('/:id', async (req,res,next) => {
 	const id = req.params.id
 	
@@ -19,7 +24,6 @@ router.get('/:id', async (req,res,next) => {
 	let imgData
 	try{
 		usersData = await User.findAll()
-		
         imgData = await User.getPic(usersData)
 	}catch(err){
 		console.error(err)
@@ -29,21 +33,20 @@ router.get('/:id', async (req,res,next) => {
 	}
 	
     if (pageDetails[id]) {
-        res.render('layout', {
-            title: pageDetails[id].name,
-            body: id,
-            pageDetails: pageDetails,
-            page: id,
-			usersData: usersData,
-			imgData: imgData,
-        });
+		res.json(usersData)
+        // res.render('layout', {
+            // title: pageDetails[id].name,
+            // body: id,
+            // pageDetails: pageDetails,
+            // page: id,
+			// usersData: usersData,
+			// imgData: imgData,
+        // });
     } else {
 		let error = new Error("Page not found");
 		error.status = 404; // Define o status HTTP para o erro
 		next(error); // Passa o erro para o middleware de erro			
     }
 })
-
-
 
 module.exports = router
