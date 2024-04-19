@@ -33,15 +33,14 @@ router.get('/:id', async (req,res,next) => {
 	}
 	
     if (pageDetails[id]) {
-		res.json(usersData)
-        // res.render('layout', {
-            // title: pageDetails[id].name,
-            // body: id,
-            // pageDetails: pageDetails,
-            // page: id,
-			// usersData: usersData,
-			// imgData: imgData,
-        // });
+        res.render('layout', {
+            title: pageDetails[id].name,
+            body: id,
+            pageDetails: pageDetails,
+            page: id,
+			usersData: usersData,
+			imgData: imgData,
+        });
     } else {
 		let error = new Error("Page not found");
 		error.status = 404; // Define o status HTTP para o erro
