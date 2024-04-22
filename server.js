@@ -14,15 +14,31 @@ const passport = require('passport')
 const app = express()
 const port = process.env.PORT ||  8000
 
+//Guardar as sessoes
+const adminSessionStore = new MySQLStore({
+  clearExpired: true,
+  checkExpirationInterval: 900000,  // Limpa as sessões expiradas a cada 15 minutos
+  expiration: 86400000,  // Sessões expiram após 24 horas
+  schema: {
+    tableName: 'admin_sessions',  // Nome específico para a tabela de sessões de administradores
+    columnNames: {
+      session_id: 'session_id',
+      expires: 'expires',
+      data: 'data'
+    }
+  }
+}, conn);
+  
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
+  store: adminSessionStore,
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // Defina como true se estiver usando HTTPS
+    secure: process.env.NODE_ENV === 'production',  // Uso de HTTPS
     httpOnly: true,
-    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 dias
-	sameSite: 'strict' // Pode ser 'strict', 'lax', ou 'none'
+    maxAge: 30 * 24 * 60 * 60 * 1000,  // 30 dias
+    sameSite: 'strict'
   }
 }));
 
