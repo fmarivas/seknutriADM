@@ -14,6 +14,17 @@ const passport = require('passport')
 const app = express()
 const port = process.env.PORT ||  8000
 
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // Defina como true se estiver usando HTTPS
+    httpOnly: true,
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 dias
+	sameSite: 'strict' // Pode ser 'strict', 'lax', ou 'none'
+  }
+}));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

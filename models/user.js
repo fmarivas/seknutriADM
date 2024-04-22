@@ -32,8 +32,58 @@ class User {
 
 		return userPics;
 	}
+	
+	static async findUserByEmail(email){
+		return new Promise((resolve, reject) => {
+			const query = 'SELECT * FROM admins WHERE email=?';
 
-
+			conn.query(query, [email], (err, results) => {
+				if (err) {
+					console.error('Database error:', err);
+					reject(err);
+				} else if (results.length > 0) {
+					resolve(results[0]);  // Retorna o primeiro usuário encontrado
+				} else {
+					resolve(null);  // Nenhum usuário encontrado
+				}
+			});
+		});
+	}
+	
+	static getUserSecret(userId){
+		return new Promise((resolve, reject) => {
+			const query = 'SELECT secret FROM admins WHERE id=?';
+			
+			conn.query(query, [userId], (err, results) => {
+				if (err) {
+					console.error(err);
+					reject(err);
+					return;
+				}
+				
+				if (results.length > 0) {
+					resolve(results[0].secret);  // Garanta que está passando a string secret corretamente
+				} else {
+					resolve(null);
+				}
+			});
+		});
+	}
+	
+	static getUserData(){
+        return new Promise((resolve, reject) => {
+            conn.query('SELECT * FROM admin', (err, results) => {
+                if (err) {
+					console.error(err)
+					let error = new Error("DataBase Error");
+					error.status = 500; // Define o status HTTP para o erro
+                    reject(error);
+                } else {
+                    resolve(results);
+                }
+            });
+        });
+	}
 
 }
 

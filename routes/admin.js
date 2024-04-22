@@ -1,15 +1,54 @@
 require('dotenv').config()
 const express = require('express')
 const router = express.Router()
-
+const { check, validationResult } = require('express-validator');
+const bcrypt = require('bcrypt');
 const User = require('../models/user')
+const isAuth = require('../controllers/middleware/authMiddleware'); // Importar o middleware se estiver em um arquivo separado
+const isLoggedIn = require('../controllers/middleware/firstFactor'); // Importar o middleware se estiver em um arquivo separado
+const authenticator = require('../controllers/function/Authenticator')
+// Validadores
+const loginValidators = [
+    check('email').isEmail().withMessage('Enter a valid email address'),
+    check('password').isLength({ min: 5 }).withMessage('Password must be at least 5 characters long')
+];
 
-
-router.get('/', (req,res) => {
-	res.redirect('/users_management')
+//GET
+router.get('/auth/verify',isLoggedIn, (req,res) => {
+	res.render('two-factor-auth')
 })
 
-router.get('/:id', async (req,res,next) => {
+router.get('/login', (req,res) => {
+	res.render('login')
+})
+
+router.get('/recovery', (req,res) => {
+	res.render('recovery')
+})
+
+router.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Session destruction error:', err);
+        }
+        res.redirect('/login');
+    });
+});
+
+router.get('/setup-2fa', isAuth, async (req, res) => {
+    const userId = req.session.userId; // Certifique-se de que o userId está disponível na sessão
+	const userEmail = req.session.userEmail
+    try {
+        const qrCodeImageUrl = await authenticator.generateQRCode(userId, userEmail);
+        res.render('setup-2fa', { qrCodeImageUrl }); // Sempre passe a variável, mesmo que null
+    } catch (error) {
+        console.error(error);
+        res.render('setup-2fa', { qrCodeImageUrl: null, message: "Failed to generate QR Code. Please try again." });
+    }
+});
+
+
+router.get('/:id',isAuth, async (req,res,next) => {
 	const id = req.params.id
 	
 	const pageDetails = {
@@ -47,5 +86,93 @@ router.get('/:id', async (req,res,next) => {
 		next(error); // Passa o erro para o middleware de erro			
     }
 })
+
+
+//POST
+router.post('/login', loginValidators, async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        // Retorna para o login com mensagens de erro de validação
+        return res.render('login', {
+            errorMessage: errors.array().map(error => error.msg).join(' and '),
+            email: req.body.email  // Manter o email preenchido
+        });
+    }
+	
+	const { email, password, rememberMe } = req.body;
+
+    try {
+        // Procurar usuário pelo email
+        const user = await User.findUserByEmail(email);
+        if (!user) {
+            return res.render('login', { errorMessage: "Email not found." });
+        }
+
+        // Comparar senha
+		const isPasswordMatch = await bcrypt.compare(password, user.password_hash);
+		if (isPasswordMatch) {
+			// Definindo dados do usuário na sessão
+			req.session.userId = user.id;			// Armazenar o ID do usuário na sessão
+			req.session.userEmail = user.email
+			req.session.userRole = user.role_id; // Armazenar o role do usuário para controle de acesso
+			req.session.isAuthenticated = false; // Flag para verificar se o usuário está autenticado
+			req.session.loggedIn = true
+			// Configurações de cookie baseadas em "remember me"
+			if (rememberMe) {
+				req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 dias
+			} else {
+				req.session.cookie.expires = false; // Sessão expira ao fechar o navegador
+			}
+
+			// Redireciona para o dashboard ou painel de controle
+			res.redirect('/auth/verify');
+		} else {
+			return res.render('login', { errorMessage: "Invalid password." });
+		}
+    } catch (error) {
+        console.error(error);
+        res.render('login', { errorMessage: "An error occurred while processing your request." });
+    }	
+	
+});
+
+router.post('/verify-2fa', isLoggedIn, async (req, res) => {
+    const tokenParts = req.body.token;
+    if (!tokenParts || !Array.isArray(tokenParts)) {
+        return res.render('two-factor-auth', { errorMessage: "Invalid token data." });
+    }
+
+    const userToken = tokenParts.join('');
+
+    try {
+        const userSecretData = await User.getUserSecret(req.session.userId);
+		
+        if (!userSecretData) {
+            return res.render('two-factor-auth', { errorMessage: "No secret found for user." });
+        }
+
+        const is2faValid = await authenticator.verifyTwoFactorAuthCode(userSecretData, userToken);
+        if (is2faValid) {
+            req.session.regenerate((err) => {
+                if (err) {
+                    console.error('Error regenerating session:', err);
+                    return res.render('two-factor-auth', { errorMessage: "An error occurred. Please try again." });
+                }
+
+                req.session.isAuthenticated = true;
+                req.session.loggedIn = null;
+
+                res.redirect('/users_management');
+            });
+        } else {
+            return res.render('two-factor-auth', { errorMessage: "Invalid 2FA code." });
+        }
+    } catch (error) {
+        console.error(error);
+        res.render('two-factor-auth', { errorMessage: "An error occurred while verifying 2FA code." });
+    }
+});
+
+
 
 module.exports = router
