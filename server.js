@@ -14,6 +14,9 @@ const passport = require('passport')
 const app = express()
 const port = process.env.PORT ||  8000
 
+const cors = require('cors');
+app.use(cors()); // Isso permite todas as origens, ajuste conforme necessário para produção
+
 //Guardar as sessoes
 const adminSessionStore = new MySQLStore({
   clearExpired: true,
@@ -32,13 +35,13 @@ const adminSessionStore = new MySQLStore({
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   store: adminSessionStore,
   cookie: {
     secure: process.env.NODE_ENV === 'production',  // Uso de HTTPS
     httpOnly: true,
     maxAge: 30 * 24 * 60 * 60 * 1000,  // 30 dias
-    sameSite: 'strict'
+    sameSite: 'lax'
   }
 }));
 

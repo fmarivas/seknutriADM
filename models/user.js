@@ -33,10 +33,9 @@ class User {
 		return userPics;
 	}
 	
-	static async findUserByEmail(email){
+	static async findUserByEmail(email) {
 		return new Promise((resolve, reject) => {
-			const query = 'SELECT * FROM admins WHERE email=?';
-
+			const query = 'SELECT * FROM admins WHERE email = ?';
 			conn.query(query, [email], (err, results) => {
 				if (err) {
 					console.error('Database error:', err);
@@ -49,6 +48,7 @@ class User {
 			});
 		});
 	}
+
 	
 	static getUserSecret(userId){
 		return new Promise((resolve, reject) => {

@@ -7,6 +7,11 @@ const User = require('../models/user')
 const isAuth = require('../controllers/middleware/authMiddleware'); // Importar o middleware se estiver em um arquivo separado
 const isLoggedIn = require('../controllers/middleware/firstFactor'); // Importar o middleware se estiver em um arquivo separado
 const authenticator = require('../controllers/function/Authenticator')
+
+const keygen = require('../controllers/keygen/keygen')
+const NodeCache = require('node-cache')
+const tokenCache = new NodeCache()
+
 // Validadores
 const loginValidators = [
     check('email').isEmail().withMessage('Enter a valid email address'),
@@ -36,8 +41,8 @@ router.get('/logout', (req, res) => {
 });
 
 router.get('/setup-2fa', isAuth, async (req, res) => {
-    const userId = req.session.userId; // Certifique-se de que o userId está disponível na sessão
-	const userEmail = req.session.userEmail
+    const userId = req.session.user.id; // Certifique-se de que o userId está disponível na sessão
+	const userEmail = req.session.user.email
     try {
         const qrCodeImageUrl = await authenticator.generateQRCode(userId, userEmail);
         res.render('setup-2fa', { qrCodeImageUrl }); // Sempre passe a variável, mesmo que null
@@ -47,6 +52,25 @@ router.get('/setup-2fa', isAuth, async (req, res) => {
     }
 });
 
+router.get('/get-token', async (req,res) =>{
+	try{
+		const userEmail = req.session.user.email;
+		
+		 // Verifica se o token está presente no cache para o usuário atual
+		 const cachedToken = tokenCache.get(userEmail);
+		 
+		 if(cachedToken){
+			 res.json({ token: cachedToken });
+		 }else{
+			const NewToken = await keygen.generateToken({email: userEmail}, '1h')
+			tokenCache.set(userEmail, NewToken, 3600) 
+			res.json({token: NewToken})
+		 }
+	}catch(err){
+		console.error(err)
+		res.status(500).json({ error: 'Erro interno do servidor' });
+	}	
+})
 
 router.get('/:id',isAuth, async (req,res,next) => {
 	const id = req.params.id
@@ -112,9 +136,8 @@ router.post('/login', loginValidators, async (req, res) => {
 		const isPasswordMatch = await bcrypt.compare(password, user.password_hash);
 		if (isPasswordMatch) {
 			// Definindo dados do usuário na sessão
-			req.session.userId = user.id;			// Armazenar o ID do usuário na sessão
-			req.session.userEmail = user.email
-			req.session.userRole = user.role_id; // Armazenar o role do usuário para controle de acesso
+			req.session.user = user
+			
 			req.session.isAuthenticated = false; // Flag para verificar se o usuário está autenticado
 			req.session.loggedIn = true
 			// Configurações de cookie baseadas em "remember me"
@@ -123,9 +146,14 @@ router.post('/login', loginValidators, async (req, res) => {
 			} else {
 				req.session.cookie.expires = false; // Sessão expira ao fechar o navegador
 			}
-
-			// Redireciona para o dashboard ou painel de controle
-			res.redirect('/auth/verify');
+			
+			req.session.save(err =>{
+				if(err){
+					console.error("Session save error:", err);
+				}
+				// Redireciona para o dashboard ou painel de controle
+				res.redirect('/auth/verify');	
+			})
 		} else {
 			return res.render('login', { errorMessage: "Invalid password." });
 		}
@@ -143,9 +171,9 @@ router.post('/verify-2fa', isLoggedIn, async (req, res) => {
     }
 
     const userToken = tokenParts.join('');
-
+	
     try {
-        const userSecretData = await User.getUserSecret(req.session.userId);
+        const userSecretData = await User.getUserSecret(req.session.user.id);
 		
         if (!userSecretData) {
             return res.render('two-factor-auth', { errorMessage: "No secret found for user." });
@@ -153,17 +181,18 @@ router.post('/verify-2fa', isLoggedIn, async (req, res) => {
 
         const is2faValid = await authenticator.verifyTwoFactorAuthCode(userSecretData, userToken);
         if (is2faValid) {
-            req.session.regenerate((err) => {
-                if (err) {
-                    console.error('Error regenerating session:', err);
-                    return res.render('two-factor-auth', { errorMessage: "An error occurred. Please try again." });
-                }
+				req.session.isAuthenticated = true;
+				req.session.loggedIn = null;
 
-                req.session.isAuthenticated = true;
-                req.session.loggedIn = null;
+				req.session.save(err => {
+					if (err) {
+						console.error('Error saving session:', err);
+						return res.render('two-factor-auth', { errorMessage: "An error occurred. Please try again." });
+					}
 
-                res.redirect('/users_management');
-            });
+					res.redirect('/users_management');
+				});
+            
         } else {
             return res.render('two-factor-auth', { errorMessage: "Invalid 2FA code." });
         }
