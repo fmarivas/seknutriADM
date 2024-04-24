@@ -7,6 +7,7 @@ const User = require('../models/user')
 const isAuth = require('../controllers/middleware/authMiddleware'); // Importar o middleware se estiver em um arquivo separado
 const isLoggedIn = require('../controllers/middleware/firstFactor'); // Importar o middleware se estiver em um arquivo separado
 const authenticator = require('../controllers/function/Authenticator')
+const PlatformData = require('../controllers/function/PlatformData')
 
 const keygen = require('../controllers/keygen/keygen')
 const NodeCache = require('node-cache')
@@ -72,6 +73,16 @@ router.get('/get-token', async (req,res) =>{
 	}	
 })
 
+router.get('/count-users', async (req, res) => {
+    try {
+        const userCount = await PlatformData.getUserCount();
+        res.json({ totalUsers: userCount });
+    } catch (err) {
+        console.error('Erro na rota /count-users:', err);
+        res.status(500).send('Erro ao obter a contagem de usuários');
+    }
+});
+
 router.get('/:id',isAuth, async (req,res,next) => {
 	const id = req.params.id
 	
@@ -102,6 +113,7 @@ router.get('/:id',isAuth, async (req,res,next) => {
             pageDetails: pageDetails,
             page: id,
 			usersData: usersData,
+			adminData: req.session.user,
 			imgData: imgData,
         });
     } else {
@@ -202,6 +214,27 @@ router.post('/verify-2fa', isLoggedIn, async (req, res) => {
     }
 });
 
+
+router.post('/delete-user', isAuth, async (req, res) => {
+    const userId = req.body.userId;
+	const userEmail = req.session.user.email
+	const token = tokenCache.get(userEmail)
+	
+	if(!userId){
+		return res.status(400).json({message: 'Id do usuario não encontrado'})
+	}
+	if(!token){
+		return res.status(401).json({ message: 'Token não encontrado.' });
+	}	
+	
+    try{
+		const deleteUser = await User.deleteUserData(userId)
+		res.json(deleteUser)
+	}catch(err){
+		console.error(err)
+		return res.status(500).json({ message: 'Erro ao deletar usuario. Tente mais tarde' });
+	}
+});
 
 
 module.exports = router

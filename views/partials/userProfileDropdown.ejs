@@ -4,9 +4,9 @@
 			<a href="logout"> <i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </div>
-    <% if (typeof user !== 'undefined' && user) { %>
-        <img src="<%= user.profile_pic || 'assets/img/profile.jpg' %>" alt="Profile Pic" id="imgProfile">
-        <span><%= user.fname %> <%= user.lname %></span>
+    <% if (typeof adminData !== 'undefined' && adminData) { %>
+        <img src="<%= adminData.profile_pic || 'assets/img/profile.jpg' %>" alt="Profile Pic" id="imgProfile">
+        <span><%= adminData.first_name %> <%= adminData.last_name %></span>
     <% } else { %>
         <img src="assets/img/profile.jpg" alt="Profile Pic" id="imgProfile">
         <span>Guest User</span>

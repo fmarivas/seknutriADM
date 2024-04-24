@@ -73,7 +73,7 @@
 											</td>
 											<td>
 												<div>
-													<i class="fas fa-trash-alt clickable" onclick="deleteUser(this)"></i>
+													<i class="fas fa-trash-alt clickable" data-user-id="<%= userData.user_id_info %>" style="cursor: pointer"></i>
 												</div>
 											</td>
 										</tr>
@@ -82,7 +82,6 @@
 							<% } else { %>
 								
 							<% } %>
-
 						</tbody>
 					</table>				
 				</div>
@@ -246,6 +245,7 @@
         </div>
     </div>
 	<div id="successMessage" class="floating-message success-message"></div>	
+	<div id="failureMessage" class="floating-message failure-message"></div>	
 	<script>
 		//Dropdown Label
 		function toggleContent(element, contentId) {
@@ -258,6 +258,8 @@
 				content.style.display = "none";
 			}
 		}	
+		
+		
 	</script>
 </body>
 </html>

@@ -156,6 +156,11 @@
     color: #fff;
 }
 
+.failure-message {
+    background-color: #f44336; /* Cor vermelha para erro */
+    color: #fff;
+}
+
 @media (max-width: 950px) {
 	.user-content thead{
 		font-size: 8px;

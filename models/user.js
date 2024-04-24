@@ -84,6 +84,35 @@ class User {
             });
         });
 	}
+	
+static async deleteUserData(userId) {
+    return new Promise((resolve, reject) => {
+        const querySelect = 'SELECT * FROM users WHERE user_id_info=?';
+
+        conn.query(querySelect, [userId], (err, resultSelect) => {
+            if (err) {
+                console.error(err);
+                reject(err);
+                return;
+            }
+
+            if (resultSelect.length > 0) {
+                const deleteQuery = 'DELETE FROM users WHERE user_id_info = ?';
+
+                conn.query(deleteQuery, [userId], (err, resultDelete) => {
+                    if (err) {
+                        console.error(err);
+                        reject(err);
+                    } else {
+                        resolve(resultDelete); // Resolve a promessa com o resultado da deleção
+                    }
+                });
+            } else {
+                resolve("No user found with the provided userId"); // Resolve com mensagem se nenhum usuário for encontrado
+            }
+        });
+    });
+}
 
 }
 
