@@ -189,7 +189,7 @@ router.post('/login', loginValidators, async (req, res) => {
 
 router.post('/verify-2fa', async (req, res) => {
     const tokenParts = req.body.token;
-	
+	console.log(req.session)
     if (!req.session.loggedIn) {
         const error = new Error("Access Denied");
         error.status = 401; // Unauthorized
