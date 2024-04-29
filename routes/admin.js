@@ -16,7 +16,7 @@ const tokenCache = new NodeCache()
 // Validadores
 const loginValidators = [
     check('email').isEmail().withMessage('Enter a valid email address'),
-    check('password').isLength({ min: 5 }).withMessage('Password must be at least 5 characters long')
+    check('passWord').isLength({ min: 5 }).withMessage('Password must be at least 5 characters long')
 ];
 
 //GET
@@ -139,7 +139,7 @@ router.post('/login', loginValidators, async (req, res) => {
         });
     }
 	
-	const { email, password, rememberMe } = req.body;
+	const { email, passWord, rememberMe } = req.body;
 
     try {
         // Procurar usuário pelo email
@@ -149,7 +149,7 @@ router.post('/login', loginValidators, async (req, res) => {
         }
 
         // Comparar senha
-		const isPasswordMatch = await bcrypt.compare(password, user.password_hash);
+		const isPasswordMatch = await bcrypt.compare(passWord, user.password_hash);
 		if (isPasswordMatch) {
 			// Definindo dados do usuário na sessão
 			req.session.user = user
@@ -171,7 +171,7 @@ router.post('/login', loginValidators, async (req, res) => {
 				res.redirect('/auth/verify');	
 			})
 		} else {
-			return res.render('login', { errorMessage: "Invalid password." });
+			return res.render('login', { errorMessage: "Invalid passWord." });
 		}
     } catch (error) {
         console.error(error);

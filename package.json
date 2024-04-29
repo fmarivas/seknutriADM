@@ -9,6 +9,8 @@
   "author": "fmarivas",
   "license": "ISC",
   "dependencies": {
+    "@sentry/node": "^7.112.2",
+    "@sentry/profiling-node": "^7.112.2",
     "aws-sdk": "^2.1602.0",
     "axios": "^1.6.8",
     "bcrypt": "^5.1.1",
