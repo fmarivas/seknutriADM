@@ -19,7 +19,14 @@ const loginValidators = [
 ];
 
 //GET
-router.get('/auth/verify',isLoggedIn, (req,res) => {
+router.get('/auth/verify', (req,res) => {
+    if (!req.session.loggedIn) {
+        const error = new Error("Access Denied");
+        error.status = 401; // Unauthorized
+        return res.render('login', {errorMessage: error.message});
+    }	
+	
+	
 	res.render('two-factor-auth')
 })
 
@@ -189,12 +196,6 @@ router.post('/login', loginValidators, async (req, res) => {
 
 router.post('/verify-2fa', async (req, res) => {
     const tokenParts = req.body.token;
-	console.log(req.session)
-    if (!req.session.loggedIn) {
-        const error = new Error("Access Denied");
-        error.status = 401; // Unauthorized
-        return res.render('login', {errorMessage: error.message});
-    }
 	
     if (!tokenParts || !Array.isArray(tokenParts)) {
         return res.render('two-factor-auth', { errorMessage: "Invalid token data." });
