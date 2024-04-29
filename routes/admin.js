@@ -155,9 +155,6 @@ router.post('/login', loginValidators, async (req, res) => {
 
         // Comparar senha
 		const isPasswordMatch = await bcrypt.compare(passWord, user.password_hash);
-		console.log(passWord)
-		console.log(user.password_hash)
-		console.log(isPasswordMatch)
 		
 		if (isPasswordMatch) {
 			// Definindo dados do usuário na sessão
@@ -166,7 +163,6 @@ router.post('/login', loginValidators, async (req, res) => {
 			req.session.isAuthenticated = false; // Flag para verificar se o usuário está autenticado
 			req.session.loggedIn = true
 			
-			console.log(req.session)
 			// Configurações de cookie baseadas em "remember me"
 			if (rememberMe) {
 				req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 dias
@@ -191,8 +187,15 @@ router.post('/login', loginValidators, async (req, res) => {
 	
 });
 
-router.post('/verify-2fa', isLoggedIn, async (req, res) => {
+router.post('/verify-2fa', async (req, res) => {
     const tokenParts = req.body.token;
+	
+    if (!req.session.loggedIn) {
+        const error = new Error("Access Denied");
+        error.status = 401; // Unauthorized
+        return res.render('login', {errorMessage: error.message});
+    }
+	
     if (!tokenParts || !Array.isArray(tokenParts)) {
         return res.render('two-factor-auth', { errorMessage: "Invalid token data." });
     }

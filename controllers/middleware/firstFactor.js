@@ -1,5 +1,4 @@
 function ensureFirstFactorPassed(req, res, next) {
-	 console.log("Session Logged In:", req.session);  // Adicione este log para depuração
     if (req.session.loggedIn) {
         next();
     } else {
