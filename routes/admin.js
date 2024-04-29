@@ -154,10 +154,11 @@ router.post('/login', loginValidators, async (req, res) => {
         }
 
         // Comparar senha
+		const isPasswordMatch = await bcrypt.compare(passWord, user.password_hash);
 		console.log(passWord)
 		console.log(user.password_hash)
+		console.log(isPasswordMatch)
 		
-		const isPasswordMatch = await bcrypt.compare(passWord, user.password_hash);
 		if (isPasswordMatch) {
 			// Definindo dados do usuário na sessão
 			req.session.user = user
