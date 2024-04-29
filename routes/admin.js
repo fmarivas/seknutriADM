@@ -16,7 +16,6 @@ const tokenCache = new NodeCache()
 // Validadores
 const loginValidators = [
     check('email').isEmail().withMessage('Enter a valid email address'),
-    check('passWord').isLength({ min: 5 }).withMessage('Password must be at least 5 characters long')
 ];
 
 //GET
