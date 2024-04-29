@@ -19,18 +19,6 @@ const loginValidators = [
 ];
 
 //GET
-router.get('/auth/verify', (req,res) => {
-	res.json(req.session)
-    // if (!req.session.loggedIn) {
-        // const error = new Error("Access Denied");
-        // error.status = 401; // Unauthorized
-        // return res.render('login', {errorMessage: error.message});
-    // }	
-	
-	
-	// res.render('two-factor-auth')
-})
-
 router.get('/login', (req,res) => {
 	res.render('login')
 })
@@ -178,13 +166,20 @@ router.post('/login', loginValidators, async (req, res) => {
 				req.session.cookie.expires = false; // Sessão expira ao fechar o navegador
 			}
 			
-			// req.session.save(err =>{
-				// if(err){
-					// console.error("Session save error:", err);
-				// }
+			req.session.save(err =>{
+				if(err){
+					console.error("Session save error:", err);
+				}
 				// Redireciona para o dashboard ou painel de controle
-				res.redirect('/auth/verify');	
-			// })
+				if (!req.session.loggedIn) {
+					const error = new Error("Access Denied");
+					error.status = 401; // Unauthorized
+					return res.render('login', {errorMessage: error.message});
+				}	
+				
+				
+				res.render('two-factor-auth')	
+			})
 		} else {
 			return res.render('login', { errorMessage: "Invalid password." });
 		}
