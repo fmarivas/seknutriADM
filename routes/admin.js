@@ -178,13 +178,13 @@ router.post('/login', loginValidators, async (req, res) => {
 				req.session.cookie.expires = false; // Sessão expira ao fechar o navegador
 			}
 			
-			req.session.save(err =>{
-				if(err){
-					console.error("Session save error:", err);
-				}
+			// req.session.save(err =>{
+				// if(err){
+					// console.error("Session save error:", err);
+				// }
 				// Redireciona para o dashboard ou painel de controle
 				res.redirect('/auth/verify');	
-			})
+			// })
 		} else {
 			return res.render('login', { errorMessage: "Invalid password." });
 		}
