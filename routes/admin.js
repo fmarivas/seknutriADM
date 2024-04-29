@@ -165,6 +165,8 @@ router.post('/login', loginValidators, async (req, res) => {
 			
 			req.session.isAuthenticated = false; // Flag para verificar se o usuário está autenticado
 			req.session.loggedIn = true
+			
+			console.log(req.session)
 			// Configurações de cookie baseadas em "remember me"
 			if (rememberMe) {
 				req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 dias
