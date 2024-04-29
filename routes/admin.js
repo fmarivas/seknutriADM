@@ -20,14 +20,15 @@ const loginValidators = [
 
 //GET
 router.get('/auth/verify', (req,res) => {
-    if (!req.session.loggedIn) {
-        const error = new Error("Access Denied");
-        error.status = 401; // Unauthorized
-        return res.render('login', {errorMessage: error.message});
-    }	
+	res.json(req.session)
+    // if (!req.session.loggedIn) {
+        // const error = new Error("Access Denied");
+        // error.status = 401; // Unauthorized
+        // return res.render('login', {errorMessage: error.message});
+    // }	
 	
 	
-	res.render('two-factor-auth')
+	// res.render('two-factor-auth')
 })
 
 router.get('/login', (req,res) => {
