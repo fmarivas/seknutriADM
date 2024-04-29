@@ -139,7 +139,13 @@ router.post('/login', loginValidators, async (req, res) => {
     }
 	
 	const { email, passWord, rememberMe } = req.body;
-
+	
+	if(!email && !passWord){
+		return res.render('login', {
+			errorMessage: "Email and Password required",
+		})
+	}
+	
     try {
         // Procurar usuário pelo email
         const user = await User.findUserByEmail(email);
@@ -148,9 +154,10 @@ router.post('/login', loginValidators, async (req, res) => {
         }
 
         // Comparar senha
+		console.log(passWord)
+		console.log(user.password_hash)
 		
 		const isPasswordMatch = await bcrypt.compare(passWord, user.password_hash);
-		console.log(isPasswordMatch)
 		if (isPasswordMatch) {
 			// Definindo dados do usuário na sessão
 			req.session.user = user
@@ -172,7 +179,7 @@ router.post('/login', loginValidators, async (req, res) => {
 				res.redirect('/auth/verify');	
 			})
 		} else {
-			return res.render('login', { errorMessage: "Invalid passWord." });
+			return res.render('login', { errorMessage: "Invalid password." });
 		}
     } catch (error) {
         console.error(error);
