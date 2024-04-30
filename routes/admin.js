@@ -47,14 +47,14 @@ router.get('/logout', (req, res) => {
         if (err) {
             console.error('Session destruction error:', err);
         }
-		res,clearCookie(process.env.SESSION_NAME)
+		res.clearCookie(process.env.SESSION_NAME)
         res.redirect('/login');
     });
 });
 
 router.get('/setup-2fa', isAuth, async (req, res) => {
-    const userId = req.session.user.id; // Certifique-se de que o userId está disponível na sessão
-	const userEmail = req.session.user.email
+    const userId = req.user.id; // Certifique-se de que o userId está disponível na sessão
+	const userEmail = req.user.email
     try {
         const qrCodeImageUrl = await authenticator.generateQRCode(userId, userEmail);
         res.render('setup-2fa', { qrCodeImageUrl }); // Sempre passe a variável, mesmo que null
@@ -66,7 +66,7 @@ router.get('/setup-2fa', isAuth, async (req, res) => {
 
 router.get('/get-token', async (req,res) =>{
 	try{
-		const userEmail = req.session.user.email;
+		const userEmail = req.user.email;
 		
 		 // Verifica se o token está presente no cache para o usuário atual
 		 const cachedToken = tokenCache.get(userEmail);

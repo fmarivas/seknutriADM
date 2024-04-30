@@ -65,7 +65,7 @@ app.use(session({
 	name: process.env.SESSION_NAME,
 	secret: process.env.SESSION_SECRET,
 	resave: false,
-	saveUninitialized: true,
+	saveUninitialized: false,
 	store: adminSessionStore,
 	cookie: {
 		secure: process.env.NODE_ENV === 'production',  // Uso de HTTPS
