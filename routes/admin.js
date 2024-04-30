@@ -27,11 +27,11 @@ router.get('/login', (req,res) => {
 // Rota para renderizar a autenticação de dois fatores
 router.get('/verify', (req, res) => {
 	console.log(req.session)
-	res.json(req.user)
-    if (!req.session.loggedIn) {  // Garante que o usuário está autenticado
-        return res.redirect('/login');
-    }
-    res.render('two-factor-auth', { user: req.user });
+	res.json({user: req.user, session: req.session})
+    // if (!req.session.loggedIn) {  // Garante que o usuário está autenticado
+        // return res.redirect('/login');
+    // }
+    // res.render('two-factor-auth', { user: req.user });
 });
 
 router.get('/', (req,res) => {
