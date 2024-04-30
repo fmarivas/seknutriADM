@@ -127,67 +127,62 @@ router.get('/:id',isAuth, async (req,res,next) => {
 router.post('/login', loginValidators, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        // Retorna para o login com mensagens de erro de validação
         return res.render('login', {
             errorMessage: errors.array().map(error => error.msg).join(' and '),
-            email: req.body.email  // Manter o email preenchido
+            email: req.body.email  // Mantém o email preenchido
         });
     }
-	
-	const { email, passWord, rememberMe } = req.body;
-	
-	if(!email && !passWord){
-		return res.render('login', {
-			errorMessage: "Email and Password required",
-		})
-	}
-	
+    
+    const { email, passWord, rememberMe } = req.body;
+    
+    if (!email || !passWord) {
+        return res.render('login', {
+            errorMessage: "Email and Password required",
+        });
+    }
+    
     try {
-        // Procurar usuário pelo email
         const user = await User.findUserByEmail(email);
         if (!user) {
             return res.render('login', { errorMessage: "Email not found." });
         }
 
-        // Comparar senha
-		const isPasswordMatch = await bcrypt.compare(passWord, user.password_hash);
-		
-		if (isPasswordMatch) {
-			// Definindo dados do usuário na sessão
-			req.session.user = user
-			
-			req.session.isAuthenticated = false; // Flag para verificar se o usuário está autenticado
-			req.session.loggedIn = true
-			
-			// Configurações de cookie baseadas em "remember me"
-			if (rememberMe) {
-				req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 dias
-			} else {
-				req.session.cookie.expires = false; // Sessão expira ao fechar o navegador
-			}
-			
-			req.session.save(err =>{
-				if(err){
-					console.error("Session save error:", err);
-				}
-				// Redireciona para o dashboard ou painel de controle
-				if (!req.session.loggedIn) {
-					const error = new Error("Access Denied");
-					error.status = 401; // Unauthorized
-					return res.render('login', {errorMessage: error.message});
-				}	
-				
-				
-				res.render('two-factor-auth')	
-			})
-		} else {
-			return res.render('login', { errorMessage: "Invalid password." });
-		}
+        const isPasswordMatch = await bcrypt.compare(passWord, user.password_hash);
+        
+        if (isPasswordMatch) {
+            req.session.regenerate((err) => {
+                if (err) {
+                    console.error("Error regenerating session:", err);
+                    return res.render('login', { errorMessage: "Failed to regenerate session." });
+                }
+                
+                // Definindo dados do usuário na sessão
+                req.session.user = user;
+                req.session.isAuthenticated = false;
+                req.session.loggedIn = true;
+
+                // Configurações de cookie baseadas em "remember me"
+                if (rememberMe) {
+                    req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 dias
+                } else {
+                    req.session.cookie.expires = false; // Sessão expira ao fechar o navegador
+                }
+
+                req.session.save(err => {
+                    if (err) {
+                        console.error("Session save error:", err);
+                        return res.render('login', { errorMessage: "Failed to save session." });
+                    }
+                    res.render('two-factor-auth');
+                });
+            });
+        } else {
+            return res.render('login', { errorMessage: "Invalid password." });
+        }
     } catch (error) {
         console.error(error);
         res.render('login', { errorMessage: "An error occurred while processing your request." });
-    }	
-	
+    }   
 });
 
 router.post('/verify-2fa', async (req, res) => {
