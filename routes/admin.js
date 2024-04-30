@@ -158,7 +158,7 @@ router.post('/login', loginValidators, (req, res, next) => {
             } else {
                 req.session.cookie.expires = false;  // Expira ao fechar o navegador
             }
-			
+			console.log('Session before redirect: ', req.session)
             return res.redirect('/verify');
         });
     })(req, res, next);
