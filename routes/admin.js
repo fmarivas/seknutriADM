@@ -140,9 +140,8 @@ router.post('/login', loginValidators, (req, res, next) => {
         }
         if (!user) {
             // Se usar connect-flash ou flash similar para mensagens de erro
-            req.flash('error', info.message);
-            return res.redirect('/login');
-			console.log("Info:", info);		
+            req.flash('error', {errorMessage: info.message});
+            return res.redirect('/login');	
         }
         console.log("Erro:", err);
         console.log("Usuário:", user);

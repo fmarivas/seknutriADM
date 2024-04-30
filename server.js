@@ -79,6 +79,7 @@ passport.use(new LocalStrategy({
   },
   async (email, password, done) => {
     try {
+		console.log(password)
       const user = await User.findUserByEmail(email);
       if (!user) {
         return done(null, false, { errorMessage: 'Email not found.' });
