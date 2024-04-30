@@ -39,6 +39,7 @@ app.use((req, res, next) => {
 });
 
 
+app.set('trust proxy', 1); // Confia no primeiro proxy
 
 const cors = require('cors');
 app.use(cors()); // Isso permite todas as origens, ajuste conforme necessário para produção
@@ -59,7 +60,6 @@ const adminSessionStore = new MySQLStore({
   }
 }, conn);
 
-app.set('trust proxy', 1); // Confia no primeiro proxy
   
 app.use(session({
 	name: process.env.SESSION_NAME,
@@ -71,7 +71,7 @@ app.use(session({
 		secure: process.env.NODE_ENV === 'production',  // Uso de HTTPS
 		httpOnly: true,
 		maxAge: 30 * 24 * 60 * 60 * 1000,  // 30 dias
-		sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+		// sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
 	}
 }));
 
