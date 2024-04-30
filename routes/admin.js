@@ -26,8 +26,8 @@ router.get('/login', (req,res) => {
 
 // Rota para renderizar a autenticação de dois fatores
 router.get('/verify', (req, res) => {
-	console.log(req)
-	res.json(req)
+	console.log(req.session)
+	res.json(req.session)
     if (!req.session.loggedIn) {  // Garante que o usuário está autenticado
         return res.redirect('/login');
     }
