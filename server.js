@@ -46,9 +46,10 @@ app.set('trust proxy', 1); // Confia no primeiro proxy
 
 //Guardar as sessoes
 const adminSessionStore = new MySQLStore({
-  clearExpired: true,
-  checkExpirationInterval: 900000,  // Limpa as sessões expiradas a cada 15 minutos
-  expiration: 86400000,  // Sessões expiram após 24 horas
+  // clearExpired: true,
+  // checkExpirationInterval: 900000,  // Limpa as sessões expiradas a cada 15 minutos
+  expiration: 3600000,  // Sessões expiram após 24 horas
+  createDatabaseTable: true,
   schema: {
     tableName: 'admin_sessions',  // Nome específico para a tabela de sessões de administradores
     columnNames: {
@@ -68,7 +69,7 @@ app.use(session({
     secure: process.env.NODE_ENV === 'production',  // Uso de HTTPS
     httpOnly: true,
     maxAge: 30 * 24 * 60 * 60 * 1000,  // 30 dias
-    // sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   }
 }));
 
