@@ -39,6 +39,8 @@ app.use((req, res, next) => {
 const cors = require('cors');
 app.use(cors()); // Isso permite todas as origens, ajuste conforme necessário para produção
 
+app.set('trust proxy', 1); // Confia no primeiro proxy
+
 //Guardar as sessoes
 const adminSessionStore = new MySQLStore({
   clearExpired: true,
@@ -64,7 +66,6 @@ app.use(session({
     httpOnly: true,
     maxAge: 30 * 24 * 60 * 60 * 1000,  // 30 dias
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-	proxy: true,
   }
 }));
 
