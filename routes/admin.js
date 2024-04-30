@@ -200,6 +200,8 @@ router.post('/verify-2fa', async (req, res) => {
     const userToken = tokenParts.join('');
 	
     try {
+		res.json(req.session)
+		
         const userSecretData = await User.getUserSecret(req.session.user.id);
 		
         if (!userSecretData) {
