@@ -74,6 +74,12 @@ app.use(session({
 	}
 }));
 
+app.use((req, res, next) => {
+    console.log("Session ID:", req.sessionID);
+    console.log("Session:", req.session);
+    next();
+});
+
 // Configurando a estratégia local do Passport
 passport.use(new LocalStrategy({
     usernameField: 'email',  // Campo que estamos usando como 'username' no formulário
