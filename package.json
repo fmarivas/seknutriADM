@@ -25,6 +25,7 @@
     "mysql": "^2.18.1",
     "node-cache": "^5.1.2",
     "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
     "qrcode": "^1.5.3",
     "speakeasy": "^2.0.0",
     "uuid": "^9.0.1"

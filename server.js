@@ -9,12 +9,15 @@ const mysql = require('mysql')
  
 const session = require('express-session')
 const MySQLStore = require('express-mysql-session')(session); 
-const passport = require('passport')
 
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const bcrypt = require('bcrypt');
 
 const app = express()
 const port = process.env.PORT ||  8000
 
+const User = require('./models/user')
 //Sentry configuration
 const Sentry = require('@sentry/node');
 
@@ -68,6 +71,45 @@ app.use(session({
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   }
 }));
+
+// Configurando a estratégia local do Passport
+passport.use(new LocalStrategy({
+    usernameField: 'email',  // Campo que estamos usando como 'username' no formulário
+    passwordField: 'passWord'  // Campo para a senha no formulário
+  },
+  async (email, password, done) => {
+    try {
+      const user = await User.findUserByEmail(email);
+      if (!user) {
+        return done(null, false, { errorMessage: 'Email not found.' });
+      }
+      const isPasswordMatch = await bcrypt.compare(password, user.password_hash);
+      if (!isPasswordMatch) {
+        return done(null, false, { errorMessage: 'Invalid password.' });
+      }
+      return done(null, user); // `user` será armazenado na sessão
+    } catch (error) {
+      return done(error);
+    }
+  }
+));
+
+// Configurando o serialize e deserialize do usuário no Passport
+passport.serializeUser((user, done) => {
+  done(null, user.id);  // Armazena apenas o ID do usuário na sessão
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findUserById(id); // Certifique-se de que você tem essa função para buscar o usuário pelo ID
+    done(null, user);
+  } catch (error) {
+    done(error, null);
+  }
+});
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

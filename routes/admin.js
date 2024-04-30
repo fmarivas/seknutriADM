@@ -13,6 +13,7 @@ const keygen = require('../controllers/keygen/keygen')
 const NodeCache = require('node-cache')
 const tokenCache = new NodeCache()
 
+const passport = require('passport');
 // Validadores
 const loginValidators = [
     check('email').isEmail().withMessage('Enter a valid email address'),
@@ -22,6 +23,14 @@ const loginValidators = [
 router.get('/login', (req,res) => {
 	res.render('login')
 })
+
+// Rota para renderizar a autenticação de dois fatores
+router.get('/verify', (req, res) => {
+    if (!req.session.loggedIn) {  // Garante que o usuário está autenticado
+        return res.redirect('/login');
+    }
+    res.render('two-factor-auth', { user: req.user });
+});
 
 router.get('/', (req,res) => {
 	res.redirect('/login')
@@ -112,7 +121,7 @@ router.get('/:id',isAuth, async (req,res,next) => {
             pageDetails: pageDetails,
             page: id,
 			usersData: usersData,
-			adminData: req.session.user,
+			adminData: req.user,
 			imgData: imgData,
         });
     } else {
@@ -124,66 +133,36 @@ router.get('/:id',isAuth, async (req,res,next) => {
 
 
 //POST
-router.post('/login', loginValidators, async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.render('login', {
-            errorMessage: errors.array().map(error => error.msg).join(' and '),
-            email: req.body.email  // Mantém o email preenchido
-        });
-    }
-    
-    const { email, passWord, rememberMe } = req.body;
-    
-    if (!email || !passWord) {
-        return res.render('login', {
-            errorMessage: "Email and Password required",
-        });
-    }
-    
-    try {
-        const user = await User.findUserByEmail(email);
+router.post('/login', loginValidators, (req, res, next) => {
+    passport.authenticate('local', (err, user, info) => {
+        console.log("Erro:", err);
+        console.log("Usuário:", user);
+        console.log("Info:", info);		
+        if (err) {
+            return next(err);
+        }
         if (!user) {
-            return res.render('login', { errorMessage: "Email not found." });
+            // Se usar connect-flash ou flash similar para mensagens de erro
+            req.flash('error', info.message);
+            return res.redirect('/login');
         }
-
-        const isPasswordMatch = await bcrypt.compare(passWord, user.password_hash);
-        
-        if (isPasswordMatch) {
-            req.session.regenerate((err) => {
-                if (err) {
-                    console.error("Error regenerating session:", err);
-                    return res.render('login', { errorMessage: "Failed to regenerate session." });
-                }
-                
-                // Definindo dados do usuário na sessão
-                req.session.user = user;
-                req.session.isAuthenticated = false;
-                req.session.loggedIn = true;
-
-                // Configurações de cookie baseadas em "remember me"
-                if (rememberMe) {
-                    req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 dias
-                } else {
-                    req.session.cookie.expires = false; // Sessão expira ao fechar o navegador
-                }
-
-                req.session.save(err => {
-                    if (err) {
-                        console.error("Session save error:", err);
-                        return res.render('login', { errorMessage: "Failed to save session." });
-                    }
-                    res.render('two-factor-auth');
-                });
-            });
-        } else {
-            return res.render('login', { errorMessage: "Invalid password." });
-        }
-    } catch (error) {
-        console.error(error);
-        res.render('login', { errorMessage: "An error occurred while processing your request." });
-    }   
+        req.logIn(user, (err) => {
+            if (err) {
+                return next(err);
+            }
+            req.session.loggedIn = true;  // Passou pelo primeiro fator
+            req.session.isAuthenticated = false; 
+			
+            if (req.body.rememberMe) {
+                req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000;  // 30 dias
+            } else {
+                req.session.cookie.expires = false;  // Expira ao fechar o navegador
+            }
+            return res.redirect('/verify');
+        });
+    })(req, res, next);
 });
+
 
 router.post('/verify-2fa', async (req, res) => {
     const tokenParts = req.body.token;
@@ -195,9 +174,7 @@ router.post('/verify-2fa', async (req, res) => {
     const userToken = tokenParts.join('');
 	
     try {
-		res.json(req.session)
-		
-        const userSecretData = await User.getUserSecret(req.session.user.id);
+        const userSecretData = await User.getUserSecret(req.user.id);
 		
         if (!userSecretData) {
             return res.render('two-factor-auth', { errorMessage: "No secret found for user." });
@@ -218,6 +195,7 @@ router.post('/verify-2fa', async (req, res) => {
 				});
             
         } else {
+			req.flash('error', 'Invalid 2FA code.');
             return res.render('two-factor-auth', { errorMessage: "Invalid 2FA code." });
         }
     } catch (error) {

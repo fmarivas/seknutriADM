@@ -49,7 +49,22 @@ class User {
 		});
 	}
 
-	
+	static async findUserById(id) {
+		return new Promise((resolve, reject) => {
+			const query = 'SELECT * FROM admins WHERE id = ?'; // Corrigido de email para id
+			conn.query(query, [id], (err, results) => {
+				if (err) {
+					console.error('Database error:', err);
+					reject(err);
+				} else if (results.length > 0) {
+					resolve(results[0]);  // Retorna o primeiro usuário encontrado
+				} else {
+					resolve(null);  // Nenhum usuário encontrado
+				}
+			});
+		});
+	}
+
 	static getUserSecret(userId){
 		return new Promise((resolve, reject) => {
 			const query = 'SELECT secret FROM admins WHERE id=?';
