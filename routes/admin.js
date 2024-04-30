@@ -143,8 +143,6 @@ router.post('/login', loginValidators, (req, res, next) => {
             req.flash('error', {errorMessage: info.message});
             return res.redirect('/login');	
         }
-        console.log("Erro:", err);
-        console.log("Usuário:", user);
         req.logIn(user, (err) => {
             if (err) {
                 return next(err);
@@ -157,7 +155,9 @@ router.post('/login', loginValidators, (req, res, next) => {
             } else {
                 req.session.cookie.expires = false;  // Expira ao fechar o navegador
             }
-            return res.redirect('/verify');
+			
+			res.json(req.user)
+            // return res.redirect('/verify');
         });
     })(req, res, next);
 });
