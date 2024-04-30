@@ -135,9 +135,6 @@ router.get('/:id',isAuth, async (req,res,next) => {
 //POST
 router.post('/login', loginValidators, (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
-        console.log("Erro:", err);
-        console.log("Usuário:", user);
-        console.log("Info:", info);		
         if (err) {
             return next(err);
         }
@@ -145,7 +142,10 @@ router.post('/login', loginValidators, (req, res, next) => {
             // Se usar connect-flash ou flash similar para mensagens de erro
             req.flash('error', info.message);
             return res.redirect('/login');
+			console.log("Info:", info);		
         }
+        console.log("Erro:", err);
+        console.log("Usuário:", user);
         req.logIn(user, (err) => {
             if (err) {
                 return next(err);
