@@ -47,6 +47,7 @@ router.get('/logout', (req, res) => {
         if (err) {
             console.error('Session destruction error:', err);
         }
+		res,clearCookie(process.env.SESSION_NAME)
         res.redirect('/login');
     });
 });
