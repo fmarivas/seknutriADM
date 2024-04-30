@@ -17,6 +17,7 @@ const bcrypt = require('bcrypt');
 const app = express()
 const port = process.env.PORT ||  8000
 
+
 const User = require('./models/user')
 //Sentry configuration
 const Sentry = require('@sentry/node');
@@ -42,8 +43,6 @@ app.use((req, res, next) => {
 const cors = require('cors');
 app.use(cors()); // Isso permite todas as origens, ajuste conforme necessário para produção
 
-app.set('trust proxy', 1); // Confia no primeiro proxy
-
 //Guardar as sessoes
 const adminSessionStore = new MySQLStore({
   clearExpired: true,
@@ -59,6 +58,8 @@ const adminSessionStore = new MySQLStore({
     }
   }
 }, conn);
+
+app.set('trust proxy', 1); // Confia no primeiro proxy
   
 app.use(session({
 	name: process.env.SESSION_NAME,
