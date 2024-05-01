@@ -66,9 +66,10 @@ app.use(session({
   saveUninitialized: false, //antes true
   store: sessionStore, //Aqui
   cookie: {
-	  secure: false,
+	secure: false,
 	// secure: process.env.NODE_ENV === 'production',  // Uso de HTTPS
 	httpOnly: true,
+	// sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax',
   }  
 }));
   
