@@ -45,7 +45,7 @@ const cors = require('cors');
 app.use(cors()); // Isso permite todas as origens, ajuste conforme necessário para produção
 
 //Guardar as sessoes
-const adminSessionStore = new MySQLStore({
+const sessionStore = new MySQLStore({
   clearExpired: true,
   checkExpirationInterval: 900000,  // Limpa as sessões expiradas a cada 15 minutos
   expiration: 3600000,  // Sessões expiram após 24 horas
@@ -60,25 +60,29 @@ const adminSessionStore = new MySQLStore({
   }
 }, conn);
 
-  
 app.use(session({
-	name: process.env.SESSION_NAME,
-	secret: process.env.SESSION_SECRET,
-	resave: false,
-	saveUninitialized: false,
-	store: adminSessionStore,
-	cookie: {
-		secure: process.env.NODE_ENV === 'production',  // Uso de HTTPS
-		httpOnly: true,
-		// sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-	}
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false, //antes true
+  store: sessionStore, //Aqui
+  cookie: {
+	secure: process.env.NODE_ENV === 'production',  // Uso de HTTPS
+	httpOnly: true,
+  }  
 }));
-
-app.use((req, res, next) => {
-    console.log("Session ID:", req.sessionID);
-    console.log("Session:", req.session);
-    next();
-});
+  
+// app.use(session({
+	// name: process.env.SESSION_NAME,
+	// secret: process.env.SESSION_SECRET,
+	// resave: false,
+	// saveUninitialized: false,
+	// store: sessionStore,
+	// cookie: {
+		// secure: process.env.NODE_ENV === 'production',  // Uso de HTTPS
+		// httpOnly: true,
+		// sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+	// }
+// }));
 
 // Configurando a estratégia local do Passport
 passport.use(new LocalStrategy({
