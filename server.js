@@ -73,18 +73,6 @@ app.use(session({
   }  
 }));
   
-// app.use(session({
-	// name: process.env.SESSION_NAME,
-	// secret: process.env.SESSION_SECRET,
-	// resave: false,
-	// saveUninitialized: false,
-	// store: sessionStore,
-	// cookie: {
-		// secure: process.env.NODE_ENV === 'production',  // Uso de HTTPS
-		// httpOnly: true,
-		// sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-	// }
-// }));
 
 // Configurando a estratégia local do Passport
 passport.use(new LocalStrategy({

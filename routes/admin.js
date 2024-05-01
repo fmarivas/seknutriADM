@@ -26,12 +26,10 @@ router.get('/login', (req,res) => {
 
 // Rota para renderizar a autenticação de dois fatores
 router.get('/verify', (req, res) => {
-	console.log(req.session)
-	res.json({user: req.user, session: req.session})
-    // if (!req.session.loggedIn) {  // Garante que o usuário está autenticado
-        // return res.redirect('/login');
-    // }
-    // res.render('two-factor-auth', { user: req.user });
+    if (!req.session.loggedIn) {  // Garante que o usuário está autenticado
+        return res.redirect('/login');
+    }
+    res.render('two-factor-auth');
 });
 
 router.get('/', (req,res) => {
@@ -158,7 +156,6 @@ router.post('/login', loginValidators, (req, res, next) => {
             } else {
                 req.session.cookie.expires = false;  // Expira ao fechar o navegador
             }
-			console.log('Session before redirect: ', req.session)
             return res.redirect('/verify');
         });
     })(req, res, next);
