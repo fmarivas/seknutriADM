@@ -39,7 +39,6 @@ app.use((req, res, next) => {
 });
 
 
-app.set('trust proxy', 1); // Confia no primeiro proxy
 
 const cors = require('cors');
 app.use(cors()); // Isso permite todas as origens, ajuste conforme necessário para produção
@@ -60,16 +59,18 @@ const sessionStore = new MySQLStore({
   }
 }, conn);
 
+app.set('trust proxy', 1); // Confia no primeiro proxy
+
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false, //antes true
   store: sessionStore, //Aqui
   cookie: {
-	secure: false,
-	// secure: process.env.NODE_ENV === 'production',  // Uso de HTTPS
+	// secure: false,
+	secure: process.env.NODE_ENV === 'production',  // Uso de HTTPS
 	httpOnly: true,
-	// sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax',
+	sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   }  
 }));
   
