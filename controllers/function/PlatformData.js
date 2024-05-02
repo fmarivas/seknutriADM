@@ -16,22 +16,20 @@ class PlatformData {
 			});
 		});
 	}
-
-
-    // Método para buscar logs (exemplo genérico)
-    // static async getLogs() {
-        // return new Promise((resolve, reject) => {
-            // const query = 'SELECT * FROM logs ORDER BY created_at DESC';
-            // conn.query(query, (err, results) => {
-                // if (err) {
-                    // console.error('Erro ao buscar logs:', err);
-                    // reject(err);
-                // } else {
-                    // resolve(results);
-                // }
-            // });
-        // });
-    // }
+	
+    static async getLogs() {
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT * FROM activity_log ORDER BY activity_date DESC';
+            conn.query(query, (err, results) => {
+                if (err) {
+                    console.error('Erro ao buscar logs:', err);
+                    reject(err);
+                } else {
+					resolve(results);						
+                }
+            });
+        });
+    }
 
     // Outros métodos para diferentes tipos de dados podem ser adicionados aqui
 }

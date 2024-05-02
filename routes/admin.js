@@ -83,6 +83,13 @@ router.get('/get-token', async (req,res) =>{
 })
 
 router.get('/count-users', async (req, res) => {
+	const userEmail = req.user.email
+	const token = tokenCache.get(userEmail)
+	
+	if(!token){
+		return res.status(401).json({ message: 'Token não encontrado.' });
+	}	
+			
     try {
         const userCount = await PlatformData.getUserCount();
         res.json({ totalUsers: userCount });
@@ -91,6 +98,23 @@ router.get('/count-users', async (req, res) => {
         res.status(500).send('Erro ao obter a contagem de usuários');
     }
 });
+
+router.get('/user-activity', async (req,res) =>{
+	const userEmail = req.user.email
+	const token = tokenCache.get(userEmail)
+	
+	if(!token){
+		return res.status(401).json({ message: 'Token não encontrado.' });
+	}	
+		
+	try{
+		const activityLogs = await PlatformData.getLogs();
+		res.json({activityLogs:activityLogs})
+	}catch(err){
+		console.error('Erro na rota /user-activity:', err);
+		res.status(500).send('Erro ao buscar o logs de usuários');
+	}
+})
 
 router.get('/:id',isAuth, async (req,res,next) => {
 	const id = req.params.id

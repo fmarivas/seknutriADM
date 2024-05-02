@@ -109,12 +109,18 @@
 							<h2>Relatório de Usuários</h2>
 							
 							<div class="user-info">
-								<p>Total de Usuários Actuais:</p> <span id="totalUsers"></span>
+								<p>Total de Usuários Actuais:</p> 
+								<span id="totalUsers">
+									<span id="spinner" class="spinner" style="display: inline-block;">
+									</span>
+								</span>
 							</div>
 							
 							<div class="recent-activity">
 								<h3>Atividade Recente</h3>
 								<div class="activity-container">
+									<span class="spinner" style="display: inline-block; ">
+									</span>								
 									<ul id="recentActivityList">
 									</ul>
 								</div>
@@ -258,8 +264,7 @@
 				content.style.display = "none";
 			}
 		}	
-		
-		
+				
 	</script>
 </body>
 </html>

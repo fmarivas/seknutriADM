@@ -453,3 +453,32 @@
 .show-hide {
 	display: none;
 }
+
+/* Adiciona spinner quando ainda estiver processando os dados */
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 2s linear infinite;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.reload-button {
+    display: inline-block;
+    color: #007bff; /* Cor azul padrão do botão */
+    cursor: pointer;
+    margin: 10px auto; /* Centraliza o botão */
+    text-decoration: none; /* Remove o sublinhado */
+}
+
+.reload-button:hover {
+    color: #0056b3; /* Cor mais escura para o hover */
+}

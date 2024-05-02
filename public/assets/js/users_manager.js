@@ -212,6 +212,12 @@ radioInput.forEach(radio =>{
 
 //USERS
 //UserContent
+const spinner = document.querySelectorAll('.spinner');
+
+spinner.forEach(spin =>{		
+	spin.style.display = 'inline-block';
+})
+
 async function fetchUserCount() {
 	try{
 		const token = await fetchToken()
@@ -224,64 +230,132 @@ async function fetchUserCount() {
 		const response = await axios.get('/count-users',  config)
 		
 		if(response.data){
-			document.getElementById('totalUsers').textContent = response.data.totalUsers;			
+			document.getElementById('totalUsers').textContent = response.data.totalUsers;
+			
+			spinner.forEach(spin =>{		
+				spin.style.display = 'none'; // Esconder spinner após a conclusão do processo
+			})			
 		}else{
 			document.getElementById('totalUsers').textContent = 'Error counting users'
 		}
 	}catch(err){
 		console.error('Erro ao buscar contagem de usuários:', err);
 		document.getElementById('totalUsers').textContent = 'Error counting users';
+		
+		spinner.forEach(spin =>{		
+			spin.style.display = 'none'; // Esconder spinner após a conclusão do processo
+		})
 	}
 }
 
-setInterval(fetchUserCount, 30000)
+setInterval(fetchUserCount, 5000)
+
+async function fetchUserLogs(){
+    try {
+        const token = await fetchToken();
+        const config = {
+            headers: { 
+                Authorization: `Bearer ${token}` 
+            }           
+        };
+
+        const response = await axios.get('/user-activity', config);
+        const recentActivityList = document.getElementById('recentActivityList');
+        recentActivityList.innerHTML = ''; // Limpa a lista antes de adicionar novos itens
+
+        spinner.forEach(spin =>{		
+            spin.style.display = 'inline-block'; // Mostrar spinner durante a carga
+        })
+
+        // Botão de recarregar
+        const reloadButton = document.createElement('a');
+        reloadButton.innerHTML = `<i class="fas fa-sync-alt"></i>`;
+        reloadButton.title = 'Recarregar';
+        reloadButton.href = '#';
+        reloadButton.classList.add('reload-button');
+        reloadButton.onclick = fetchUserLogs; // Adiciona o evento de clique ao botão
+
+        // Verifica se há atividades e se a resposta não está vazia
+        if (response.data && response.data.activityLogs && response.data.activityLogs.length > 0) {
+            recentActivityList.appendChild(reloadButton); // Adiciona o botão acima da lista
+            response.data.activityLogs.forEach(activity => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <span class="activity-date">${activity.activity_date}</span>
+                    <span class="activity-type">${activity.activity_type}</span>
+                    <span class="activity-details">ID ${activity.user_id}: ${activity.activity_details}</span>
+                `;
+                recentActivityList.appendChild(listItem);
+            });
+        } else {
+            // Criando uma mensagem para mostrar que não há atividades
+            const noActivityMessage = document.createElement('div');
+            noActivityMessage.innerHTML = `
+                <div class="text-center">
+                    <i class="fas fa-info-circle"></i> Não há nada para mostrar
+					<br>
+					<a href="#" class="reload-button" title="Recarregar"><i class="fas fa-sync-alt"></i></a>
+                </div>
+            `;
+            recentActivityList.appendChild(noActivityMessage);
+        }
+    } catch (err) {
+        console.error('Erro ao buscar os logs de usuários:', err);
+    } finally {
+        spinner.forEach(spin =>{		
+            spin.style.display = 'none'; // Esconder spinner após a conclusão do processo
+        })
+    }
+}
+
+setInterval(fetchUserLogs, 5000); // Continua a chamar fetchUserLogs a cada 5 segundos
 
 
-		//Indicadores de Desempenho
-		// Selecione os toggles 
-		const toggleButtons = document.querySelectorAll('.toggleView');
+//Indicadores de Desempenho
+// Selecione os toggles 
+const toggleButtons = document.querySelectorAll('.toggleView');
 
-		// Selecione os checkboxes
-		const visibilityCheckboxes = document.querySelectorAll(".visibility");
+// Selecione os checkboxes
+const visibilityCheckboxes = document.querySelectorAll(".visibility");
 
-		// Conteúdos
-		const contentGoal = document.getElementById('contentGoal'); 
-		const contentIdx = document.getElementById('contentIdx');
+// Conteúdos
+const contentGoal = document.getElementById('contentGoal'); 
+const contentIdx = document.getElementById('contentIdx');
 
-		// Percorra os botões toggle 
-		toggleButtons.forEach((button, index) => {
+// Percorra os botões toggle 
+toggleButtons.forEach((button, index) => {
 
-		  button.addEventListener('click', () => {
+  button.addEventListener('click', () => {
 
-			// Alterne os ícones ao clicar
-			button.classList.toggle("fa-eye");
-			button.classList.toggle("fa-eye-slash");
-			
-			// Encontre o checkbox correspondente pelo índice
-			const checkbox = visibilityCheckboxes[index];
+	// Alterne os ícones ao clicar
+	button.classList.toggle("fa-eye");
+	button.classList.toggle("fa-eye-slash");
+	
+	// Encontre o checkbox correspondente pelo índice
+	const checkbox = visibilityCheckboxes[index];
 
-			// Alterne o estado do checkbox
-			checkbox.checked = !checkbox.checked;
+	// Alterne o estado do checkbox
+	checkbox.checked = !checkbox.checked;
 
-		  });
+  });
 
-		});
+});
 
-		// Percorra os checkboxes
-		visibilityCheckboxes.forEach(checkbox => {
+// Percorra os checkboxes
+visibilityCheckboxes.forEach(checkbox => {
 
-		  checkbox.addEventListener('change', () => {
-			
-			// Encontre o conteúdo correspondente pelo ID
-			const content = checkbox.id === "showIdx" ?  
-			  contentIdx : contentGoal;
-			
-			// Mostre/oculte o conteúdo 
-			content.classList.toggle('show-hide');
+  checkbox.addEventListener('change', () => {
+	
+	// Encontre o conteúdo correspondente pelo ID
+	const content = checkbox.id === "showIdx" ?  
+	  contentIdx : contentGoal;
+	
+	// Mostre/oculte o conteúdo 
+	content.classList.toggle('show-hide');
 
-		  });
+  });
 
-		});
+});
 
 
 });
